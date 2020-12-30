@@ -1,0 +1,11 @@
+server:
+  port: 2180
+
+
+debug: false
+easy:
+  upsert:
+    config:
+      print-sql: false
+      batch-limit: 10000
+
