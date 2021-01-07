@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Configuration;
 public class DynamicConfig {
 
     private AMapWeatherProperties aMapWeatherProperties;
+    private ICiBa iCiBa;
 
 
     /**
@@ -52,6 +53,18 @@ public class DynamicConfig {
          * 可选值：JSON,XML
          */
         private String output="JSON";
+    }
+
+    /**
+     * @describe: 爱词霸
+     * @author : 吴佳伟
+     * @date : 2021/1/7 10:08 下午
+     * @version : 1.0
+     */
+    @Data
+    public static class ICiBa{
+        private String url="http://open.iciba.com/dsapi/";
+
     }
 
 

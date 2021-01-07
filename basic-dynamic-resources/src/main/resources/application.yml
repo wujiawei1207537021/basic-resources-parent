@@ -20,3 +20,6 @@ spring:
 dynamic:
   a-map-weather-properties:
     key: 8981bcc05f2555531ef137010f65089e
+  i-ci-ba:
+    url: http://open.iciba.com/dsapi/
+

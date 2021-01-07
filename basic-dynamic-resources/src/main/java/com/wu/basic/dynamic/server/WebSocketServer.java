@@ -1,12 +1,5 @@
 package com.wu.basic.dynamic.server;
 
-/**
- * @author : 吴佳伟
- * @version 1.0
- * @describe :
- * @date : 2021/1/3 8:47 下午
- */
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
