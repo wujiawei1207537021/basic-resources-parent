@@ -48,6 +48,17 @@
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>top.wu2020</groupId>
+            <artifactId>wu-database-generator-starter</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>top.wu2020</groupId>
+            <artifactId>wu-framework-shiro</artifactId>
+            <version>1.0.8</version>
+        </dependency>
 
 
     </dependencies>
