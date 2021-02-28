@@ -6,7 +6,7 @@ easy:
   upsert:
     config:
       print-sql: true
-      batch-limit: 10000
+      batch-limit: 10000000
 
 spring:
   #数据库配置
@@ -19,9 +19,15 @@ spring:
     continue-on-error: true
   shiro:
     verification: session
+  servlet:
+    multipart:
+      max-request-size: 1024MB
+      file-size-threshold: 1024MB
+      max-file-size: 1024MB
 dynamic:
   a-map-weather-properties:
     key: 8981bcc05f2555531ef137010f65089e
   i-ci-ba:
     url: http://open.iciba.com/dsapi/
+
 
