@@ -4,10 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.wu.framework.easy.stereotype.upsert.component.IUpsert;
 import com.wu.framework.easy.stereotype.upsert.entity.EasyHashMap;
 import com.wu.framework.easy.stereotype.web.EasyController;
+import com.wu.framework.inner.lazy.database.expand.database.persistence.LazyOperation;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -18,14 +22,16 @@ import java.util.List;
  * @date : 2021/2/28 1:27 下午
  */
 @EasyController("/xinhua")
-public class XinHuaDictionaryController {
+public class XinHuaDictionaryController implements CommandLineRunner {
     private final IUpsert iUpsert;
+    private final LazyOperation lazyOperation;
 
-    public XinHuaDictionaryController(IUpsert iUpsert) {
+    public XinHuaDictionaryController(IUpsert iUpsert, LazyOperation lazyOperation) {
         this.iUpsert = iUpsert;
+        this.lazyOperation = lazyOperation;
     }
 
-    @PostConstruct
+//    @PostConstruct
     @PostMapping()
     public void saveWord() {
         String jsonStr = "";
@@ -51,5 +57,41 @@ public class XinHuaDictionaryController {
         }
     }
 
+    /**
+     * @param
+     * @return
+     * @describe 百度文字转换成语音
+     * @author Jia wei Wu
+     * @date 2021/3/2 9:36 下午
+     **/
+    public InputStream baiduTextToSpeech(String text) throws IOException {
+        String url = "https://fanyi.baidu.com/gettts?lan=zh&text=%s&spd=5&source=wise";
+        URL u = new URL(String.format(url, text));
+        HttpURLConnection urlConnection = (HttpURLConnection) u.openConnection();
+        int statusCode = urlConnection.getResponseCode();
+        if (statusCode != HttpURLConnection.HTTP_OK) {
+            System.out.println("Http错误码：" + statusCode);
+        }
+        InputStream is = urlConnection.getInputStream();
+        return is;
 
+    }
+
+
+    /**
+     * Callback used to run the bean.
+     *
+     * @param args incoming main method arguments
+     * @throws Exception on error
+     */
+    @Override
+    public void run(String... args) throws Exception {
+        List<EasyHashMap> easyHashMapList = lazyOperation.executeSQL("select word from word where voice is null limit 1000 ", EasyHashMap.class);
+        for (EasyHashMap easyHashMap : easyHashMapList) {
+            InputStream word = baiduTextToSpeech(easyHashMap.get("word").toString());
+            easyHashMap.put("voice", word);
+            easyHashMap.setUniqueLabel("word");
+            iUpsert.upsert(easyHashMap);
+        }
+    }
 }
