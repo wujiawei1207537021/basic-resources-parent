@@ -7,7 +7,7 @@
     <parent>
         <artifactId>wu-easy-parent</artifactId>
         <groupId>top.wu2020</groupId>
-        <version>1.0.1</version>
+        <version>1.0.2</version>
     </parent>
     <artifactId>basic-resources-parent</artifactId>
     <groupId>top.wu2020</groupId>

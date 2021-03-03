@@ -1,8 +1,5 @@
 package com.wu.basic.dynamic.controller;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
@@ -19,13 +16,12 @@ import java.io.FileNotFoundException;
 public class zz {
 
 
-
-        public static void main(String[] args) {
-            PlayTest playTest = new PlayTest("/Users/wujiawei/Desktop/aa.mp3");
-            playTest.start();
-            System.out.println("dd");
+    public static void main(String[] args) {
+        PlayTest playTest = new PlayTest("/Users/wujiawei/Desktop/aa.mp3");
+        playTest.start();
+        System.out.println("dd");
 //        playTest.stop();
-        }
+    }
 
 
     static class PlayTest extends Thread {

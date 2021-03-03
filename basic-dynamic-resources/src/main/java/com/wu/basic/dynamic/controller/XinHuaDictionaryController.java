@@ -6,7 +6,10 @@ import com.wu.framework.easy.stereotype.upsert.entity.EasyHashMap;
 import com.wu.framework.easy.stereotype.web.EasyController;
 import com.wu.framework.inner.lazy.database.expand.database.persistence.LazyOperation;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -25,18 +28,19 @@ import java.util.List;
 public class XinHuaDictionaryController implements CommandLineRunner {
     private final IUpsert iUpsert;
     private final LazyOperation lazyOperation;
+    private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
     public XinHuaDictionaryController(IUpsert iUpsert, LazyOperation lazyOperation) {
         this.iUpsert = iUpsert;
         this.lazyOperation = lazyOperation;
     }
 
-//    @PostConstruct
+//        @PostConstruct
     @PostMapping()
     public void saveWord() {
         String jsonStr = "";
         try {
-            File file = new File("/Users/wujiawei/IdeaProjects/chinese-xinhua/data/idiom.json");
+            File file = ResourceUtils.getFile("classpath:static/data/word.json");
             FileReader fileReader = new FileReader(file);
             Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
             int ch = 0;
@@ -49,7 +53,7 @@ public class XinHuaDictionaryController implements CommandLineRunner {
             jsonStr = sb.toString();
             jsonStr = jsonStr.replace("'", "’");
             final List<EasyHashMap> easyHashMaps = JSON.parseArray(jsonStr, EasyHashMap.class);
-            easyHashMaps.get(0).setUniqueLabel("idiom");
+            easyHashMaps.get(0).setUniqueLabel("word");
             iUpsert.upsert(easyHashMaps);
         } catch (IOException e) {
             e.printStackTrace();
@@ -64,7 +68,7 @@ public class XinHuaDictionaryController implements CommandLineRunner {
      * @author Jia wei Wu
      * @date 2021/3/2 9:36 下午
      **/
-    public InputStream baiduTextToSpeech(String text) throws IOException {
+    public File baiduTextToSpeech(String text) throws IOException {
         String url = "https://fanyi.baidu.com/gettts?lan=zh&text=%s&spd=5&source=wise";
         URL u = new URL(String.format(url, text));
         HttpURLConnection urlConnection = (HttpURLConnection) u.openConnection();
@@ -73,8 +77,17 @@ public class XinHuaDictionaryController implements CommandLineRunner {
             System.out.println("Http错误码：" + statusCode);
         }
         InputStream is = urlConnection.getInputStream();
-        return is;
-
+        File tempFile = new File("temp" + File.separator + text + ".mp3");
+        if(!tempFile.getParentFile().exists()){
+            tempFile.getParentFile().mkdir();
+        }
+        OutputStream out = new FileOutputStream(tempFile.getPath());
+        int len = 0;
+        byte[] b = new byte[2048];
+        while ((len = is.read(b)) != -1) {
+            out.write(b, 0, len);
+        }
+        return tempFile;
     }
 
 
@@ -86,12 +99,14 @@ public class XinHuaDictionaryController implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        List<EasyHashMap> easyHashMapList = lazyOperation.executeSQL("select word from word where voice is null limit 1000 ", EasyHashMap.class);
+        List<EasyHashMap> easyHashMapList = lazyOperation.executeSQL("select voice,strokes,update_time,pinyin,radicals,create_time,more,oldword,id,explanation,word from word where voice is null limit 100 ", EasyHashMap.class);
+        String url = "https://fanyi.baidu.com/gettts?lan=zh&text={1}&spd=5&source=wise";
         for (EasyHashMap easyHashMap : easyHashMapList) {
-            InputStream word = baiduTextToSpeech(easyHashMap.get("word").toString());
-            easyHashMap.put("voice", word);
+            String word = easyHashMap.get("word").toString();
+            easyHashMap.put("voice", baiduTextToSpeech(word));
             easyHashMap.setUniqueLabel("word");
-            iUpsert.upsert(easyHashMap);
         }
+        iUpsert.upsert(easyHashMapList);
+        if(easyHashMapList.size()==100)run(args);
     }
 }
