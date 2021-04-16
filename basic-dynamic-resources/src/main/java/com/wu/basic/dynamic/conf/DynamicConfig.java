@@ -1,9 +1,14 @@
 package com.wu.basic.dynamic.conf;
 
+import com.mysql.cj.jdbc.MysqlDataSource;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
 
 /**
  * @author : 吴佳伟
@@ -66,6 +71,17 @@ public class DynamicConfig {
         private String url="http://open.iciba.com/dsapi/";
 
     }
+
+
+    @Bean(name = "autoDataSource1")
+    public DataSource dataSource1() {
+        MysqlDataSource build = DataSourceBuilder.create().type(MysqlDataSource.class).build();
+        build.setUrl("jdbc:mysql://127.0.0.1:3306/temp?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
+        build.setUser("root");
+        build.setPassword("wujiawei");
+        return build;
+    }
+
 
 
 }

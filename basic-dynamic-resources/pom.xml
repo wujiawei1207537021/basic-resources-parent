@@ -14,17 +14,8 @@
     <dependencies>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
             <groupId>top.wu2020</groupId>
             <artifactId>wu-easy-upsert-starter</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>top.wu2020</groupId>
-            <artifactId>wu-easy-excel-starter</artifactId>
-            <version>1.0.1</version>
         </dependency>
 
         <dependency>
@@ -42,18 +33,9 @@
         </dependency>
 
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.springfox</groupId>
             <artifactId>springfox-boot-starter</artifactId>
             <version>3.0.0</version>
-        </dependency>
-        <dependency>
-            <groupId>top.wu2020</groupId>
-            <artifactId>wu-database-generator-starter</artifactId>
         </dependency>
 
 <!--        <dependency>-->
