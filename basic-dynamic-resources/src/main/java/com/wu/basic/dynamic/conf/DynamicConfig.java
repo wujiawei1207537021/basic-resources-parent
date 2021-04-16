@@ -73,10 +73,10 @@ public class DynamicConfig {
     }
 
 
-    @Bean(name = "autoDataSource1")
-    public DataSource dataSource1() {
+    @Bean(name = "dataSource")
+    public DataSource dataSource() {
         MysqlDataSource build = DataSourceBuilder.create().type(MysqlDataSource.class).build();
-        build.setUrl("jdbc:mysql://127.0.0.1:3306/temp?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
+        build.setUrl("jdbc:mysql://www.wu2020.top:3306/test?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai");
         build.setUser("root");
         build.setPassword("wujiawei");
         return build;

@@ -1,21 +1,15 @@
 package com.wu.basic.dynamic.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.wu.framework.easy.stereotype.upsert.component.IUpsert;
-import com.wu.framework.easy.stereotype.upsert.entity.EasyHashMap;
-import com.wu.framework.easy.stereotype.web.EasyController;
+import com.wu.framework.inner.layer.web.EasyController;
 import com.wu.framework.inner.lazy.database.expand.database.persistence.LazyOperation;
+import com.wu.framework.inner.lazy.database.expand.database.persistence.map.EasyHashMap;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -26,40 +20,39 @@ import java.util.List;
  */
 @EasyController("/xinhua")
 public class XinHuaDictionaryController implements CommandLineRunner {
-    private final IUpsert iUpsert;
+
     private final LazyOperation lazyOperation;
     private final RestTemplate restTemplate = new RestTemplateBuilder().build();
 
-    public XinHuaDictionaryController(IUpsert iUpsert, LazyOperation lazyOperation) {
-        this.iUpsert = iUpsert;
+    public XinHuaDictionaryController(LazyOperation lazyOperation) {
         this.lazyOperation = lazyOperation;
     }
 
 //        @PostConstruct
-    @PostMapping()
-    public void saveWord() {
-        String jsonStr = "";
-        try {
-            File file = ResourceUtils.getFile("classpath:static/data/word.json");
-            FileReader fileReader = new FileReader(file);
-            Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
-            int ch = 0;
-            StringBuffer sb = new StringBuffer();
-            while ((ch = reader.read()) != -1) {
-                sb.append((char) ch);
-            }
-            fileReader.close();
-            reader.close();
-            jsonStr = sb.toString();
-            jsonStr = jsonStr.replace("'", "’");
-            final List<EasyHashMap> easyHashMaps = JSON.parseArray(jsonStr, EasyHashMap.class);
-            easyHashMaps.get(0).setUniqueLabel("word");
-            iUpsert.upsert(easyHashMaps);
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        }
-    }
+//    @PostMapping()
+//    public void saveWord() {
+//        String jsonStr = "";
+//        try {
+//            File file = ResourceUtils.getFile("classpath:static/data/word.json");
+//            FileReader fileReader = new FileReader(file);
+//            Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+//            int ch = 0;
+//            StringBuffer sb = new StringBuffer();
+//            while ((ch = reader.read()) != -1) {
+//                sb.append((char) ch);
+//            }
+//            fileReader.close();
+//            reader.close();
+//            jsonStr = sb.toString();
+//            jsonStr = jsonStr.replace("'", "’");
+//            final List<EasyHashMap> easyHashMaps = JSON.parseArray(jsonStr, EasyHashMap.class);
+//            easyHashMaps.get(0).setUniqueLabel("word");
+//            lazyOperation.insert(easyHashMaps);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//
+//        }
+//    }
 
     /**
      * @param
@@ -78,7 +71,7 @@ public class XinHuaDictionaryController implements CommandLineRunner {
         }
         InputStream is = urlConnection.getInputStream();
         File tempFile = new File("temp" + File.separator + text + ".mp3");
-        if(!tempFile.getParentFile().exists()){
+        if (!tempFile.getParentFile().exists()) {
             tempFile.getParentFile().mkdir();
         }
         OutputStream out = new FileOutputStream(tempFile.getPath());
@@ -99,14 +92,14 @@ public class XinHuaDictionaryController implements CommandLineRunner {
      */
     @Override
     public void run(String... args) throws Exception {
-        List<EasyHashMap> easyHashMapList = lazyOperation.executeSQL("select voice,strokes,update_time,pinyin,radicals,create_time,more,oldword,id,explanation,word from word where voice is null limit 100 ", EasyHashMap.class);
+        List<EasyHashMap> easyHashMapList = lazyOperation.executeSQL("select voice,strokes,update_time,pin_yin,radicals,create_time,more,old_word,id,explanation,word from word where voice is null limit 100 ", EasyHashMap.class);
         String url = "https://fanyi.baidu.com/gettts?lan=zh&text={1}&spd=5&source=wise";
         for (EasyHashMap easyHashMap : easyHashMapList) {
             String word = easyHashMap.get("word").toString();
             easyHashMap.put("voice", baiduTextToSpeech(word));
             easyHashMap.setUniqueLabel("word");
         }
-        iUpsert.upsert(easyHashMapList);
-        if(easyHashMapList.size()==100)run(args);
+//        lazyOperation.insert(easyHashMapList);
+        if (easyHashMapList.size() == 100) run(args);
     }
 }

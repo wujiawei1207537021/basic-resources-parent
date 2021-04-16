@@ -1,7 +1,8 @@
 package com.wu.basic.dynamic.controller;
 
 import com.wu.basic.dynamic.server.WebSocketServer;
-import com.wu.framework.easy.stereotype.web.EasyController;
+
+import com.wu.framework.inner.layer.web.EasyController;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
