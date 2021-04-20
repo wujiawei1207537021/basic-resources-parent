@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +40,7 @@ public class WeatherController {
     }
 
 
-    //    @PostConstruct
+    @PostConstruct
     @Async
     @Scheduled(cron = "0 0 0/1 * * ?")
     @PostMapping("/init")
@@ -81,6 +82,7 @@ public class WeatherController {
             final List<EasyHashMap> easyHashMapList = JSONArray.parseArray(json.getJSONArray("lives").toJSONString(), EasyHashMap.class);
             return easyHashMapList.get(0);
         } catch (Exception e) {
+            System.out.println(json);
             e.printStackTrace();
             return null;
         }
